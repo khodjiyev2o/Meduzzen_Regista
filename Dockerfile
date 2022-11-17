@@ -1,6 +1,6 @@
 FROM --platform=linux/amd64 python:3.9.7
 RUN pip install --upgrade pip
-WORKDIR /api
+WORKDIR /app
 
 COPY requirements.txt ./
 
