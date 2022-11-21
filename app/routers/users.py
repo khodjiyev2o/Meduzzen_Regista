@@ -18,37 +18,37 @@ user_router = APIRouter(
 #     return user
 
 
-@user_router.get('/users', response_model=list[UserSchema])
+@user_router.get('/all', response_model=list[UserSchema])
 async def all_users(session: AsyncSession = Depends(get_session), page: int = Query(default=1)) -> list[UserSchema]:
     result = await UserCRUD(session=session).get_users(page)
     return result
 
 
-@user_router.get('/users/{id}', response_model=UserSchema)
+@user_router.get('/{id}', response_model=UserSchema)
 async def get_user_by_id(id: int, session: AsyncSession = Depends(get_session)) -> UserSchema:
     user = await UserCRUD(session=session).get_user(id)
     return user
 
 
-@user_router.post('/users', response_model=UserSchema)
+@user_router.post('/add', response_model=UserSchema)
 async def add_user(user: UserCreateSchema, session: AsyncSession = Depends(get_session)) -> UserSchema:
     user = await UserCRUD(session=session).create_user(user)
     return user
 
 
-@user_router.post('/users/login', response_model=str)
+@user_router.post('/login', response_model=str)
 async def log_user(user: UserLoginSchema, session: AsyncSession = Depends(get_session)) -> str:
     token = await UserCRUD(session=session).login_user(user)
     return token
 
 
-@user_router.patch('/users', response_model=UserSchema)
+@user_router.patch('/patch', response_model=UserSchema)
 async def patch_user(user: UserAlterSchema, db_user: User = Depends(get_user)) -> UserSchema:
     user = await UserCRUD(user=db_user).patch_user(user)
     return user
 
 
-@user_router.delete('/users', response_model=UserSchema)
+@user_router.delete('/deletes', response_model=UserSchema)
 async def delete_user(user: User = Depends(get_user)) -> UserSchema:
     user = await UserCRUD(user=user).delete_user()
     return user

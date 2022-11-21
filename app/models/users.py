@@ -10,7 +10,7 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     description = Column(String)
-    #companies = relationship('Company', back_populates='owner', cascade='all, delete')
+    worker = relationship('Worker', back_populates='user', cascade='all, delete')
     #requests = relationship('Request', back_populates='user', cascade='all, delete')
     password = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
