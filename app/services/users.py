@@ -71,7 +71,7 @@ class UserCRUD:
     async def get_user(self, id: int) -> UserSchema:
         user = await self.session.get(User, id)
         if user:
-            return UserSchema(id=user.id, username=user.username, email=user.email, description=user.description)
+            return UserSchema(id=user.id, username=user.username, email=user.email, description=user.description,admin=user.admin)
         raise HTTPException(404, 'user not found')
 
 
@@ -81,6 +81,37 @@ class UserCRUD:
         await self.session.commit()
         return return_user
 
+    async def director(self,user_id) -> bool:
+        if user_id == 1:
+            return True
+        else:
+            return False
+
+    async def make_admin(self,user_id) -> UserSchema:
+        user = await self.session.get(User, user_id)
+        if user.admin:
+           raise HTTPException(404,f"User {user.username} is already an admin")
+        else:
+            user.admin = True
+        await self.session.commit()
+        return UserSchema(id=user.id,
+            username=user.username,
+            email=user.email,
+            description=user.description,
+            admin=user.admin)
+
+    async def delete_admin(self,user_id) -> UserSchema:
+        user = await self.session.get(User, user_id)
+        if not user.admin:
+           raise HTTPException(404,f"User {user.username} is not  an admin")
+        else:
+            user.admin = False
+        await self.session.commit()
+        return UserSchema(id=user.id,
+            username=user.username,
+            email=user.email,
+            description=user.description,
+            admin=user.admin)
 
 
 async def get_user(session: AsyncSession = Depends(get_session), Token: str = Header()) -> User:
@@ -91,3 +122,4 @@ async def get_user(session: AsyncSession = Depends(get_session), Token: str = He
         return user
     else:
         raise HTTPException(404, 'user validation error')
+

@@ -2,7 +2,7 @@ from app.schemas.users import UserCreateSchema, UserLoginSchema, UserSchema, Use
 from app.models.users import User
 from app.services.users import UserCRUD
 from app.db import get_session
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.users import get_user
 
@@ -52,3 +52,20 @@ async def patch_user(user: UserAlterSchema, db_user: User = Depends(get_user)) -
 async def delete_user(user: User = Depends(get_user)) -> UserSchema:
     user = await UserCRUD(user=user).delete_user()
     return user
+
+
+@user_router.post('/add_admin',response_model=UserSchema )
+async def add_admin(id: int, user: User = Depends(get_user)) -> HTTPException:
+    director = await UserCRUD(user=user).director(user_id=user.id)
+    if director:
+       return await UserCRUD(user=user).make_admin(user_id=user.id)
+    else:
+        raise HTTPException(403,"You are not allowed to create an admin!")
+
+@user_router.patch('/delete_admin',response_model=UserSchema )
+async def delete_admin(id: int, user: User = Depends(get_user)) -> HTTPException:
+    director = await UserCRUD(user=user).director(user_id=user.id)
+    if director:
+       return await UserCRUD(user=user).delete_admin(user_id=user.id)
+    else:
+        raise HTTPException(403,"You are not allowed to create an admin!")

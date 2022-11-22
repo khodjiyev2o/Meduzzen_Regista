@@ -8,6 +8,7 @@ class UserCreateSchema(BaseModel):
     description: Optional[str] = Field(min_length=1, max_length=4096)
     password1: str = Field(min_length=8, max_length=32)
     password2: str = Field(min_length=8, max_length=32)
+    
 
     @validator('password2')
     def passwords_match(cls, password2, values):
@@ -32,6 +33,7 @@ class UserSchema(BaseModel):
     username: str = Field(min_length=1, max_length=32)
     email: EmailStr
     description: Optional[str] = Field(min_length=1, max_length=4096)
+    admin : Optional[bool] = Field(default=False)
 
 
 class UserAlterSchema(BaseModel):
