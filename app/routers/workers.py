@@ -2,7 +2,7 @@ from app.schemas.users import UserCreateSchema, UserLoginSchema, UserSchema, Use
 from app.models.workers import Worker
 from app.models.users import User
 from app.schemas.workers import WorkerAlterSchema, WorkerSchema, WorkerCreateSchema
-from app.services.workers import WorkerCRUD
+from app.services.workers import WorkerCRUD, get_worker
 from app.db import get_session
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,16 +14,6 @@ worker_router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-
-# @user_router.get('/users/validate', response_model=UserSchema)
-# async def validate(user: UserSchema = Depends(get_or_create_user)) -> UserSchema:
-#     return user
-
-
-# @user_router.get('/all', response_model=list[UserSchema])
-# async def all_users(session: AsyncSession = Depends(get_session), page: int = Query(default=1)) -> list[UserSchema]:
-#     result = await UserCRUD(session=session).get_users(page)
-#     return result
 
 @worker_router.get('/all', response_model=list[WorkerSchema])
 async def all_users(session: AsyncSession = Depends(get_session), page: int = Query(default=1)) -> list[WorkerSchema]:
@@ -40,6 +30,13 @@ async def add_worker(
         worker = await WorkerCRUD(session=session).create_worker(worker=worker)
         return worker
 
+
+@worker_router.patch('/patch', response_model=WorkerSchema)
+async def patch_worker(worker: WorkerAlterSchema,user: User = Depends(get_user), db_worker: Worker = Depends(get_worker)) -> WorkerSchema:
+    if user.admin:
+        worker = await WorkerCRUD(worker=db_worker).patch_worker(worker=worker)
+        return worker
+    raise HTTPException(403,f"This user is not autharized to update a worker")
 
 
 @worker_router.delete('/delete')

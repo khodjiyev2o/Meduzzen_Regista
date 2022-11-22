@@ -8,11 +8,14 @@ class Worker(Base):
     __tablename__ = 'workers'
     id = Column(Integer, primary_key=True, index=True)
     specialization = Column(String)
-    user_id = Column(Integer, ForeignKey('users.id'), index=True)
-    user = relationship('User', back_populates='worker')
     description = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+    user_id = Column(Integer, ForeignKey('users.id'), index=True)
+    user = relationship('User', back_populates='worker')
+
+    location_id = Column(Integer, ForeignKey('locations.id'), index=True)
+    location = relationship('Location', back_populates='worker')
 
 

@@ -2,8 +2,8 @@
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
-from app.routers.users import user_router
-from app.routers.workers import worker_router
+from app.routers import users, locations, workers
+
 # from routers.tasks import task_router
 
 
@@ -22,6 +22,6 @@ def configure(app):
     )
     
     add_pagination(app)
-    app.include_router(user_router)
-    app.include_router(worker_router)
-    # app.include_router(task_router)
+    app.include_router(users.user_router)
+    app.include_router(workers.worker_router)
+    app.include_router(locations.location_router)

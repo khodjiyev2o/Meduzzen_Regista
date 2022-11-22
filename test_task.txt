@@ -31,10 +31,10 @@ API можно условно разделить на 2 части:
 
 
 
-## add a location to worker
-## location crud 
-## update ,create , delete location(filials)
-## location : name , geo_info 
-## one worker.specialization ,one worker.location
+## add a location to worker  //done
+## location crud  //done
+## update ,create , delete location(filials) //done
+## location : name , geo_info //done
+## one worker.specialization ,one worker.location //done
 ## update worker.location , meaning move to another place 
 

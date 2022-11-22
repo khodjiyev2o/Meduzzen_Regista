@@ -1,4 +1,3 @@
-
 from app.models.users import User
 from sqlalchemy.future import select
 from sqlalchemy import or_
@@ -31,11 +30,8 @@ class UserCRUD:
         if db_user:
             raise HTTPException(404, 'username or email already in use')
         else:
-
             new_user = User(username=user.username, email=user.email, password=sha256.hash(user.password1), description=user.description)
-            print("new_user",new_user)
-            id = self.session.add(new_user)
-            print(id)
+            self.session.add(new_user)
             await self.session.commit()
             return UserSchema(id=new_user.id, username=new_user.username, email=new_user.email, description=new_user.description)
 
@@ -85,6 +81,7 @@ class UserCRUD:
             await self.session.commit()
             return HTTPException(200,detail=f"User with id {user_tobe_deleted.id} is successfully deleted")
         raise HTTPException(404,f"User with id {id} not found")
+
 
     async def director(self,user_id) -> bool:
         if user_id == 1:
