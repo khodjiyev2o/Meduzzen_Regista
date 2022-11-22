@@ -27,10 +27,11 @@ worker_router = APIRouter(
 
 
 @worker_router.post('/add', response_model=WorkerSchema)
-async def add_company(
+async def add_worker(
             worker: WorkerCreateSchema, 
             session: AsyncSession = Depends(get_session), 
             user: User = Depends(get_user)) -> WorkerSchema:
 
-    worker = await WorkerCRUD(session=session).create_worker(worker=worker, user=user)
-    return worker
+    if user.admin:
+        worker = await WorkerCRUD(session=session).create_worker(worker=worker)
+        return worker

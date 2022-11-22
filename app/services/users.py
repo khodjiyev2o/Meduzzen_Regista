@@ -31,8 +31,11 @@ class UserCRUD:
         if db_user:
             raise HTTPException(404, 'username or email already in use')
         else:
+
             new_user = User(username=user.username, email=user.email, password=sha256.hash(user.password1), description=user.description)
-            self.session.add(new_user)
+            print("new_user",new_user)
+            id = self.session.add(new_user)
+            print(id)
             await self.session.commit()
             return UserSchema(id=new_user.id, username=new_user.username, email=new_user.email, description=new_user.description)
 
@@ -86,6 +89,9 @@ class UserCRUD:
             return True
         else:
             return False
+
+    
+        
 
     async def make_admin(self,user_id) -> UserSchema:
         user = await self.session.get(User, user_id)
