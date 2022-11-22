@@ -4,7 +4,7 @@ from app.models.users import User
 from app.schemas.workers import WorkerAlterSchema, WorkerSchema, WorkerCreateSchema
 from app.services.workers import WorkerCRUD
 from app.db import get_session
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.users import get_user
 
@@ -25,6 +25,10 @@ worker_router = APIRouter(
 #     result = await UserCRUD(session=session).get_users(page)
 #     return result
 
+@worker_router.get('/all', response_model=list[WorkerSchema])
+async def all_users(session: AsyncSession = Depends(get_session), page: int = Query(default=1)) -> list[WorkerSchema]:
+    workers = await WorkerCRUD(session=session).get_workers(page)
+    return workers
 
 @worker_router.post('/add', response_model=WorkerSchema)
 async def add_worker(
@@ -35,3 +39,15 @@ async def add_worker(
     if user.admin:
         worker = await WorkerCRUD(session=session).create_worker(worker=worker)
         return worker
+
+
+
+@worker_router.delete('/delete')
+async def delete_worker(worker_id: int,user: User = Depends(get_user)) -> HTTPException:
+    if user.admin:
+        worker = await WorkerCRUD(user=user).delete_worker(worker_id=worker_id)
+        return worker
+    raise HTTPException(403,f"This user is not autharized to delete a worker")
+
+
+

@@ -48,10 +48,12 @@ async def patch_user(user: UserAlterSchema, db_user: User = Depends(get_user)) -
     return user
 
 
-@user_router.delete('/deletes', response_model=UserSchema)
-async def delete_user(user: User = Depends(get_user)) -> UserSchema:
-    user = await UserCRUD(user=user).delete_user()
-    return user
+@user_router.delete('/delete')
+async def delete_user(user_id: int,user: User = Depends(get_user)) -> HTTPException:
+    if user.admin:
+        user = await UserCRUD(user=user).delete_user(id=user_id)
+        return user
+    raise HTTPException(403,f"This user is not autharized to delete a user")
 
 
 @user_router.post('/add_admin',response_model=UserSchema )
@@ -68,4 +70,4 @@ async def delete_admin(id: int, user: User = Depends(get_user)) -> HTTPException
     if director:
        return await UserCRUD(user=user).delete_admin(user_id=user.id)
     else:
-        raise HTTPException(403,"You are not allowed to create an admin!")
+        raise HTTPException(403,"You are not allowed to delete an admin!")

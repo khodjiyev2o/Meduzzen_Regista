@@ -27,3 +27,14 @@ API можно условно разделить на 2 части:
 - Можно использовать любой веб фреймворк на свое усмотрение
 
 На своё усмотрение можно добавить любую функциональность.
+
+
+
+
+## add a location to worker
+## location crud 
+## update ,create , delete location(filials)
+## location : name , geo_info 
+## one worker.specialization ,one worker.location
+## update worker.location , meaning move to another place 
+

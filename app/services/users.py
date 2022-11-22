@@ -67,7 +67,7 @@ class UserCRUD:
     async def get_users(self, page: int) -> list[UserSchema]:
         params = Params(page=page, size=10)
         users = await paginate(self.session, select(User), params=params)
-        return [UserSchema(id=user.id, username=user.username, email=user.email, description=user.description) for user in users.items]
+        return [UserSchema(id=user.id, username=user.username, email=user.email, description=user.description,admin=user.admin) for user in users.items]
 
 
 
@@ -78,11 +78,13 @@ class UserCRUD:
         raise HTTPException(404, 'user not found')
 
 
-    async def delete_user(self) -> UserSchema:
-        return_user = UserSchema(id=self.user.id, username=self.user.username, email=self.user.email, description=self.user.description)
-        await self.session.delete(self.user)
-        await self.session.commit()
-        return return_user
+    async def delete_user(self,id: int) -> HTTPException:
+        user_tobe_deleted = await self.session.get(User, id)
+        if user_tobe_deleted:
+            await self.session.delete(user_tobe_deleted)
+            await self.session.commit()
+            return HTTPException(200,detail=f"User with id {user_tobe_deleted.id} is successfully deleted")
+        raise HTTPException(404,f"User with id {id} not found")
 
     async def director(self,user_id) -> bool:
         if user_id == 1:
@@ -95,16 +97,16 @@ class UserCRUD:
 
     async def make_admin(self,user_id) -> UserSchema:
         user = await self.session.get(User, user_id)
-        if user.admin:
+        if user.admin == True:
            raise HTTPException(404,f"User {user.username} is already an admin")
         else:
             user.admin = True
-        await self.session.commit()
-        return UserSchema(id=user.id,
-            username=user.username,
-            email=user.email,
-            description=user.description,
-            admin=user.admin)
+            await self.session.commit()
+            return UserSchema(id=user.id,
+                username=user.username,
+                email=user.email,
+                description=user.description,
+                admin=user.admin)
 
     async def delete_admin(self,user_id) -> UserSchema:
         user = await self.session.get(User, user_id)
