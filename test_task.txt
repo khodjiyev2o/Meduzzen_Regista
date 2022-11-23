@@ -41,10 +41,16 @@ API можно условно разделить на 2 части:
 ## Thursday
 
 
-## specialization
+## specialization //done
 ## procedure // done
-## Make an Schedule 
-## Learn about time in sqlalchemy
-## schedule create for one worker , update,delete
+## Make an Schedule //done
+## Learn about time in sqlalchemy //done
+## schedule create for one worker , update,delete //done
+
+
+
+
+## in one location at the same time two workers cannot work 
+## make an appointment based on the free time  
+## make free time schedule router that returns free times of the worker
 ## get all workers from one location 
-## 
