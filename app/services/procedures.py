@@ -26,17 +26,28 @@ class ProcedureCrud:
         self.procedure = procedure
 
     async def create_procedure(self, procedure: ProcedureCreateSchema) -> Procedure:
-        db_procedure = await self.session.execute(select(Procedure).filter(and_(Procedure.name == procedure.name,Procedure.duration == procedure.duration,Procedure.specialization == procedure.specialization)))
+        db_procedure = await self.session.execute(select(Procedure).filter(and_(Procedure.worker_id == procedure.worker_id,Procedure.name == procedure.name,Procedure.duration == procedure.duration)))
         db_procedure = db_procedure.scalars().first()
         if db_procedure:
             raise HTTPException(404, 'This procedure  already exists')
         else:
-            new_procedure = Procedure(name=procedure.name, duration=procedure.duration, specialization=procedure.specialization,description=procedure.description)
+            new_procedure = Procedure(worker_id=procedure.worker_id,name=procedure.name, duration=procedure.duration,description=procedure.description)
             self.session.add(new_procedure)
             await self.session.commit()
-            return Procedure(id=new_procedure.id, name=procedure.name, duration=procedure.duration, specialization=procedure.specialization, description=procedure.description)
+            return Procedure(id=new_procedure.id,worker_id=procedure.worker_id, name=procedure.name, duration=procedure.duration,  description=procedure.description)
+
+    async def get_procedures(self, page: int) -> list[ProcedureSchema]:
+        params = Params(page=page, size=10)
+        procedures = await paginate(self.session, select(Procedure), params=params)
+        return [ProcedureSchema(id=procedure.id,worker_id=procedure.worker_id, name=procedure.name, duration=procedure.duration,description=procedure.description) for procedure in procedures.items]
 
 
+    async def delete_procedure(self, procedure_id):
+        procedure_tobe_deleted = await self.session.get(Procedure,procedure_id)
+        if procedure_tobe_deleted:
+            await self.session.delete(procedure_tobe_deleted)
+            await self.session.commit()
+            return HTTPException(200,detail=f"Procedure with id {procedure_tobe_deleted.id} is successfully deleted")
 
 async def get_procedure(id: int, session: AsyncSession = Depends(get_session), user: User = Depends(get_user)) -> Procedure:
     if user.admin:

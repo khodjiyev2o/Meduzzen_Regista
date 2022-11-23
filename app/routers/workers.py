@@ -16,19 +16,19 @@ worker_router = APIRouter(
 
 
 @worker_router.get('/all', response_model=list[WorkerSchema])
-async def all_users(session: AsyncSession = Depends(get_session), page: int = Query(default=1)) -> list[WorkerSchema]:
+async def all_workers(session: AsyncSession = Depends(get_session), page: int = Query(default=1)) -> list[WorkerSchema]:
     workers = await WorkerCRUD(session=session).get_workers(page)
     return workers
 
-@worker_router.post('/add', response_model=WorkerSchema)
+@worker_router.post('/add')
 async def add_worker(
             worker: WorkerCreateSchema, 
             session: AsyncSession = Depends(get_session), 
             user: User = Depends(get_user)) -> WorkerSchema:
 
     if user.admin:
-        worker = await WorkerCRUD(session=session).create_worker(worker=worker)
-        return worker
+        result = await WorkerCRUD(session=session).create_worker(worker=worker)
+        return result
 
 
 @worker_router.patch('/patch', response_model=WorkerSchema)

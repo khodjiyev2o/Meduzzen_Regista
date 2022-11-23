@@ -23,3 +23,20 @@ procedure_router = APIRouter(
 async def add_procedure(procedure: ProcedureCreateSchema, session: AsyncSession = Depends(get_session)) -> ProcedureSchema:
     result = await ProcedureCrud(session=session).create_procedure(procedure=procedure)
     return result
+
+
+@procedure_router.get('/all', response_model=list[ProcedureSchema])
+async def all_procedures(session: AsyncSession = Depends(get_session), page: int = Query(default=1)) -> list[ProcedureSchema]:
+    result = await ProcedureCrud(session=session).get_procedures(page)
+    return result
+
+
+
+
+
+@procedure_router.delete('/delete')
+async def delete_procedure(procedure_id: int,user: User = Depends(get_user), procedure: Location = Depends(get_procedure)) -> HTTPException:
+    if user.admin:
+        result = await ProcedureCrud(procedure=procedure).delete_procedure(procedure_id=procedure_id)
+        return result
+    raise HTTPException(403,f"This user is not autharized to delete a location")

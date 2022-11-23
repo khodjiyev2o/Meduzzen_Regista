@@ -1,13 +1,15 @@
 
 from app.schemas.workers import WorkerAlterSchema, WorkerSchema, WorkerCreateSchema
+from app.schemas.schedules import ScheduleCreateSchema, ScheduleAlterSchema
 from app.models.workers import Worker
-
 from app.models.users import User
+from app.models.schedules import Schedule
+
 from fastapi import HTTPException, Header, Depends
 from app.db import get_session
 from sqlalchemy.ext.asyncio import AsyncSession, async_object_session
 from sqlalchemy.future import select
-from typing import Optional
+from typing import Optional, Union
 from fastapi_pagination import Params
 from fastapi_pagination.ext.async_sqlalchemy import paginate
 from app.services.users import UserCRUD, get_user
@@ -70,9 +72,10 @@ class WorkerCRUD:
         if worker.description:
             self.worker.description = worker.description
         await self.session.commit()
-        return WorkerSchema(id=self.worker.id, user_id=self.worker.user_id, specialization=self.worker.specialization, description=worker.description,location_id=worker.location_id)
+        return WorkerSchema(id=self.worker.id, user_id=self.worker.user_id, specialization=self.worker.specialization, description=worker.description)
 
 
+  
 
     async def check_worker_location(self,specialization,location_id) -> bool:
         db_worker = await self.session.execute(select(Worker).filter(and_(Worker.specialization == specialization, Worker.location_id == location_id)))

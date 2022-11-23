@@ -42,14 +42,9 @@ API можно условно разделить на 2 части:
 
 
 ## specialization
-## procedure
+## procedure // done
 ## Make an Schedule 
 ## Learn about time in sqlalchemy
 ## schedule create for one worker , update,delete
 ## get all workers from one location 
-## {
-  "name": "fizioterapiya",
-  "specialization": "doctor",
-  "duration": 1,
-  "description": "mind"
-}
+## 
