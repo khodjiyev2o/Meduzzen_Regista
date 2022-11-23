@@ -30,11 +30,26 @@ API можно условно разделить на 2 части:
 
 
 
-
+####Tuesday
 ## add a location to worker  //done
 ## location crud  //done
 ## update ,create , delete location(filials) //done
 ## location : name , geo_info //done
 ## one worker.specialization ,one worker.location //done
-## update worker.location , meaning move to another place 
+## update worker.location , meaning move to another place //done
 
+## Thursday
+
+
+## specialization
+## procedure
+## Make an Schedule 
+## Learn about time in sqlalchemy
+## schedule create for one worker , update,delete
+## get all workers from one location 
+## {
+  "name": "fizioterapiya",
+  "specialization": "doctor",
+  "duration": 1,
+  "description": "mind"
+}

@@ -18,4 +18,6 @@ class Worker(Base):
     location_id = Column(Integer, ForeignKey('locations.id'), index=True)
     location = relationship('Location', back_populates='worker')
 
+    procedure_id = Column(Integer, ForeignKey('procedures.id'), index=True)
+    procedure = relationship('Procedure', back_populates='worker')
 

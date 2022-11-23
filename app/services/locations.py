@@ -55,7 +55,6 @@ class LocationCRUD:
 
 
 
-
     async def delete_location(self, location_id: int) -> HTTPException:
         location_tobe_deleted = await self.session.get(Location,location_id)
         if location_tobe_deleted:
