@@ -59,6 +59,15 @@ class AppointmentCRUD:
                                     end_time=appointment.end_time,
                                     procedure_id=appointment.procedure_id)
 
+
+    async def delete_appointment(self, appointment_id: int) -> HTTPException:
+        appointment_tobe_deleted = await self.session.get(Appointment,appointment_id)
+        if appointment_tobe_deleted:
+            await self.session.delete(appointment_tobe_deleted)
+            await self.session.commit()
+            return HTTPException(200,detail=f"Appointment with id {appointment_tobe_deleted.id} is successfully deleted")
+        raise HTTPException(404,f"Appoinment with this id  not found")
+
     
     async def get_all_appointments(self, page: int) -> list[AppointmentSchema]:
         params = Params(page=page, size=10)

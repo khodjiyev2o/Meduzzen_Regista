@@ -1,5 +1,6 @@
 from app.schemas.appointments import AppointmentAlterSchema, AppointmentCreateSchema, AppointmentSchema
 from app.models.appointments import Appointment
+from app.models.users import User
 from app.services.appointments import AppointmentCRUD
 from app.db import get_session
 from fastapi import APIRouter, Depends, Query, HTTPException
@@ -34,3 +35,12 @@ async def get_appointments_by_worker_id(worker_id: int, session: AsyncSession = 
 async def add_appoinment(appointment: AppointmentCreateSchema, session: AsyncSession = Depends(get_session)) -> AppointmentSchema:
     result = await AppointmentCRUD(session=session).create_appoinment(appointment=appointment)
     return result
+
+@appointment_router.delete('/delete')
+async def cancel_appoinment(appointment_id: int,session: AsyncSession = Depends(get_session),user: User = Depends(get_user)) -> AppointmentSchema:
+    if user.admin:
+        result = await AppointmentCRUD(session=session).delete_appointment(appointment_id=appointment_id)
+        return result
+    else:
+        raise HTTPException(403,"You are not an admin!")
+
