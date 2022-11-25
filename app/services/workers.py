@@ -31,7 +31,8 @@ class WorkerCRUD:
         if db_worker:
             raise HTTPException(404, 'worker already exists')
         else:
-            await self.check_worker_location(specialization=worker.specialization,location_id=worker.location_id)
+            
+            
             new_worker = Worker(
                 specialization=worker.specialization, 
                 user_id=worker.user_id, 
@@ -67,21 +68,23 @@ class WorkerCRUD:
 
     async def patch_worker(self, worker: WorkerAlterSchema) -> WorkerSchema:
         if worker.location_id:
-            await self.check_worker_location(location_id=worker.location_id,specialization=self.worker.specialization)
+            await self.check_worker_location(worker=worker)
             self.worker.location_id = worker.location_id
         if worker.description:
             self.worker.description = worker.description
         await self.session.commit()
         return WorkerSchema(id=self.worker.id, user_id=self.worker.user_id, specialization=self.worker.specialization, description=worker.description)
 
-
+    async def get_workers_for_one_location(self, location_id) -> list[WorkerSchema]:
+        workers =  await self.session.execute(select(Worker).filter(Worker.location_id == location_id))
+        return [WorkerSchema(id=worker[0].id, user_id=worker[0].user_id, specialization=worker[0].specialization, description=worker[0].description,location_id=worker[0].location_id) for worker in workers]
   
 
-    async def check_worker_location(self,specialization,location_id) -> bool:
-        db_worker = await self.session.execute(select(Worker).filter(and_(Worker.specialization == specialization, Worker.location_id == location_id)))
+    async def check_worker_location(self,worker) -> bool:
+        db_worker = await self.session.execute(select(Worker).filter(and_(Worker.specialization == worker.specialization, Worker.location_id == worker.location_id)))
         db_worker = db_worker.scalars().first()
         if db_worker:
-            raise HTTPException(403,f"Two workers with the same specialization cannot work in one location!")
+                    raise HTTPException(403,"Two workers with the same specialization cannot work in one location at the same time!")
         return True   
 
     

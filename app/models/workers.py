@@ -19,6 +19,8 @@ class Worker(Base):
     location = relationship('Location', back_populates='worker')
 
     
-    procedure = relationship('Procedure', back_populates='worker')
+    procedure = relationship('Procedure', back_populates='worker', cascade='all, delete')
 
-    schedule = relationship('Schedule', back_populates='worker')
+    schedule = relationship('Schedule', back_populates='worker', cascade='all, delete')
+
+    appointment = relationship("Appointment", back_populates="worker", cascade='all, delete')

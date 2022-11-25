@@ -40,9 +40,9 @@ async def patch_worker(worker: WorkerAlterSchema,user: User = Depends(get_user),
 
 
 @worker_router.delete('/delete')
-async def delete_worker(worker_id: int,user: User = Depends(get_user)) -> HTTPException:
+async def delete_worker(worker_id: int,user: User = Depends(get_user),worker: Worker = Depends(get_worker)) -> HTTPException:
     if user.admin:
-        worker = await WorkerCRUD(user=user).delete_worker(worker_id=worker_id)
+        worker = await WorkerCRUD(worker=worker).delete_worker(worker_id=worker_id)
         return worker
     raise HTTPException(403,f"This user is not autharized to delete a worker")
 

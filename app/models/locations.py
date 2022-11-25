@@ -10,4 +10,4 @@ class Location(Base):
     placename = Column(String, unique=True, index=True)
     latitude = Column(Integer)
     longitude = Column(Integer)
-    worker = relationship('Worker', back_populates='location', cascade='all, delete')
+    worker = relationship('Worker', back_populates='location')

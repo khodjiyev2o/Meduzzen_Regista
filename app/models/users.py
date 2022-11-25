@@ -10,9 +10,13 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     description = Column(String)
-    worker = relationship('Worker', back_populates='user', cascade='all, delete')
+    
     #requests = relationship('Request', back_populates='user', cascade='all, delete')
     password = Column(String)
     admin = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    worker = relationship('Worker', back_populates='user', cascade='all, delete')
+
+    appointment = relationship("Appointment", back_populates="user", cascade="all, delete")

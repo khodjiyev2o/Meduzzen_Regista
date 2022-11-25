@@ -13,10 +13,10 @@ class Procedure(Base):
     description =Column(String)
     
     worker_id = Column(Integer, ForeignKey('workers.id'), index=True)
-    worker = relationship('Worker', back_populates='procedure', cascade='all, delete')
+    worker = relationship('Worker', back_populates='procedure')
     
     
-    
+    appointment = relationship("Appointment", back_populates="procedure")
     
     
     
