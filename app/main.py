@@ -13,7 +13,7 @@ configure(app)
 
 @app.get('/', status_code=200)
 async def root():
-    return {"status": "Working!"}
+    return {"status": "Working from CI/CD GitHub actions by Samandar Khodjiyev for Meduzzen!"}
 
 
 if __name__ == '__main__':
