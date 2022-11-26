@@ -2,7 +2,7 @@ from app.models.users import User
 from sqlalchemy.future import select
 from sqlalchemy import or_
 from fastapi import HTTPException, Header, Depends
-from app.schemas.users import UserAlterSchema, UserCreateSchema, UserLoginSchema, UserSchema
+from app.schemas.users import UserAlterSchema, UserCreateSchema, UserLoginSchema, UserSchema, UserAdminShema
 from passlib.hash import pbkdf2_sha256 as sha256
 from sqlalchemy.ext.asyncio import AsyncSession, async_object_session
 from fastapi_pagination.ext.async_sqlalchemy import paginate
@@ -117,6 +117,17 @@ class UserCRUD:
             email=user.email,
             description=user.description,
             admin=user.admin)
+
+    async def create_new_admin_user(self,user: UserAdminShema) -> UserSchema:
+        db_user = await self.session.execute(select(User).filter(or_(User.email == user.email, User.username == user.username)))
+        db_user = db_user.scalars().first()
+        if db_user:
+            raise HTTPException(404, 'username or email already in use')
+        else:
+            new_user = User(username=user.username, email=user.email, password=sha256.hash(user.password1), description=user.description, admin=user.admin)
+            self.session.add(new_user)
+            await self.session.commit()
+            return UserSchema(id=new_user.id, username=new_user.username, email=new_user.email, description=new_user.description, admin=new_user.admin)
 
 
 async def get_user(session: AsyncSession = Depends(get_session), Token: str = Header()) -> User:

@@ -17,7 +17,7 @@ sys.path.append(BASE_DIR)
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-#config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
+# config.set_main_option("sqlalchemy.url", getenv("DOCKER_POSTGRES_URL_al"))
 config.set_main_option('sqlalchemy.url', f'postgresql://{getenv("POSTGRES_USER")}:{getenv("POSTGRES_PASSWORD")}@{getenv("POSTGRES_URL")}:{getenv("POSTGRES_PORT")}/{getenv("POSTGRES_DB")}')
 
 

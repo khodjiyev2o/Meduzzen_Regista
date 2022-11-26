@@ -8,8 +8,9 @@ load_dotenv()
 
 
 
-postgres_engine = create_async_engine(f'postgresql+asyncpg://{getenv("POSTGRES_USER")}:{getenv("POSTGRES_PASSWORD")}@{getenv("POSTGRES_URL")}:{getenv("POSTGRES_PORT")}/{getenv("POSTGRES_DB")}')
-
+#postgres_engine = create_async_engine(f'postgresql+asyncpg://{getenv("POSTGRES_USER")}:{getenv("POSTGRES_PASSWORD")}@{getenv("POSTGRES_URL")}:{getenv("POSTGRES_PORT")}/{getenv("POSTGRES_DB")}')
+DOCKER_POSTGRES_URL = getenv('DOCKER_POSTGRES_URL')
+postgres_engine = create_async_engine(DOCKER_POSTGRES_URL)
 session = sessionmaker(postgres_engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
 

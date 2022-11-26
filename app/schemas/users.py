@@ -41,3 +41,21 @@ class UserAlterSchema(BaseModel):
     description: Optional[str] = Field(min_length=1, max_length=4096)
     password: Optional[str] = Field(min_length=8, max_length=32)
 
+
+
+class UserAdminShema(BaseModel):
+    username: str = Field(min_length=1, max_length=32,default='khodjiyev2o')
+    email: EmailStr = Field(default='admin@gmail.com')
+    description: Optional[str] = Field(min_length=1, max_length=4096, default='admin_description')
+    password1: str = Field(min_length=8, max_length=32, default='692249735')
+    password2: str = Field(min_length=8, max_length=32, default='692249735')
+    admin: bool = Field(default=True)
+
+    @validator('password2')
+    def passwords_match(cls, password2, values):
+        if 'password1' in values and password2 != values['password1']:
+            raise ValueError('passwords do not match')
+        return password2
+
+    class Config:
+        orm_mode = True

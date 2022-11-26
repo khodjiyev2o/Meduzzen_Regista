@@ -1,4 +1,4 @@
-from app.schemas.users import UserCreateSchema, UserLoginSchema, UserSchema, UserAlterSchema
+from app.schemas.users import UserCreateSchema, UserLoginSchema, UserSchema, UserAlterSchema, UserAdminShema
 from app.models.users import User
 from app.services.users import UserCRUD
 from app.db import get_session
@@ -35,6 +35,11 @@ async def add_user(user: UserCreateSchema, session: AsyncSession = Depends(get_s
     user = await UserCRUD(session=session).create_user(user)
     return user
 
+@user_router.post('/create_admin_by_script/', response_model=UserSchema)
+async def add_useradmin(user: UserAdminShema,session: AsyncSession = Depends(get_session)) -> UserSchema:
+    user = await UserCRUD(session=session).create_new_admin_user(user)
+    return user
+
 
 @user_router.post('/login', response_model=str)
 async def log_user(user: UserLoginSchema, session: AsyncSession = Depends(get_session)) -> str:
@@ -63,6 +68,7 @@ async def add_admin(id: int, user: User = Depends(get_user)) -> HTTPException:
        return await UserCRUD(user=user).make_admin(user_id=user.id)
     else:
         raise HTTPException(403,"You are not allowed to create an admin!")
+
 
 @user_router.patch('/delete_admin',response_model=UserSchema )
 async def delete_admin(id: int, user: User = Depends(get_user)) -> HTTPException:
