@@ -9,7 +9,7 @@ auth = AuthHandler()
 async def test_healthcheck(client: AsyncClient, refresh_db):
     response = await client.get('/')
     assert response.status_code == 200
-    assert response.json() == {'status': 'Working!'}
+    assert response.json() == {'status': 'Working from CI/CD GitHub actions by Samandar Khodjiyev for Meduzzen!'}
 
 
 @mark.anyio
@@ -97,4 +97,4 @@ async def test_user_validate_app(client: AsyncClient):
 async def test_healthcheck_end(client: AsyncClient, clear_db):
     response = await client.get('/')
     assert response.status_code == 200
-    assert response.json() == {'status': 'Working!'}
+    assert response.json() == {'status': 'Working from CI/CD GitHub actions by Samandar Khodjiyev for Meduzzen!'}
