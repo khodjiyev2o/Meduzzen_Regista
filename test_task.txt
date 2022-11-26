@@ -50,7 +50,12 @@ API можно условно разделить на 2 части:
 
 
 
-## in one location at the same time two workers cannot work 
+## in one location at the same time two workers cannot work ##done
+
+
+Appointment
 ## make an appointment based on the free time  
 ## make free time schedule router that returns free times of the worker
 ## get all workers from one location 
+
+

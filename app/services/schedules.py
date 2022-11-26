@@ -3,6 +3,7 @@ from app.models.schedules import Schedule
 from app.models.users import User
 from app.models.workers import Worker
 from app.services.users import get_user
+from app.services.workers import get_worker
 from sqlalchemy.future import select
 from sqlalchemy import or_, and_
 from fastapi import HTTPException, Header, Depends
@@ -13,7 +14,7 @@ from fastapi_pagination.ext.async_sqlalchemy import paginate
 from fastapi_pagination import Params
 from app.db import get_session
 from typing import Optional, Union
-
+from datetime import date, time
 
 
 
@@ -51,7 +52,7 @@ class ScheduleCrud:
             await self.session.commit()
             return HTTPException(200,detail=f"Schedule with id {schedule_tobe_deleted.id} is successfully deleted")
     
-
+    # время приема специалиста для определенного дня
     async def get_schedule_for_worker(self, worker_id: int ) -> list[ScheduleSchema]:
         schedules = await self.session.execute(select(Schedule).filter(Schedule.worker_id == worker_id))
         return [ScheduleSchema(id=schedule[0].id, worker_id=schedule[0].worker_id, date=schedule[0].date, start_time=schedule[0].start_time, end_time=schedule[0].end_time) for schedule in schedules]
@@ -93,7 +94,15 @@ class ScheduleCrud:
         
 
 
-
+    async def get_workers_by_date(self,date:date) -> list[WorkerSchema]:
+        schedules = await self.session.execute(select(Schedule).filter(Schedule.date == date))
+        ids = [schedule[0].worker_id for schedule in schedules]
+        workers_list = []
+        for id in ids :
+           worker =  await self.session.get(Worker, id)
+           worker = WorkerSchema(id=worker.id, user_id=worker.user_id, specialization=worker.specialization, description=worker.description,location_id=worker.location_id)
+           workers_list.append(worker)
+        return workers_list
 
 async def get_schedule(id: int, session: AsyncSession = Depends(get_session), user: User = Depends(get_user)) -> Schedule:
     if user.admin:

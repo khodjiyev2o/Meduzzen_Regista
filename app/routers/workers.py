@@ -20,15 +20,12 @@ async def all_workers(session: AsyncSession = Depends(get_session), page: int = 
     workers = await WorkerCRUD(session=session).get_workers(page)
     return workers
 
-@worker_router.post('/add')
-async def add_worker(
-            worker: WorkerCreateSchema, 
-            session: AsyncSession = Depends(get_session), 
-            user: User = Depends(get_user)) -> WorkerSchema:
-
+@worker_router.post('/add',response_model=WorkerSchema)
+async def add_worker(worker: WorkerCreateSchema,session: AsyncSession = Depends(get_session), user: User = Depends(get_user)) -> WorkerSchema:
     if user.admin:
         result = await WorkerCRUD(session=session).create_worker(worker=worker)
         return result
+    raise HTTPException(403,"This user is not an admin!")
 
 
 @worker_router.patch('/patch', response_model=WorkerSchema)

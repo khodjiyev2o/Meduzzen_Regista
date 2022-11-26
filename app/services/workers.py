@@ -14,7 +14,7 @@ from fastapi_pagination import Params
 from fastapi_pagination.ext.async_sqlalchemy import paginate
 from app.services.users import UserCRUD, get_user
 from sqlalchemy import and_, or_
-
+from datetime import date, time
 
 
 class WorkerCRUD:
@@ -30,32 +30,27 @@ class WorkerCRUD:
         db_worker = db_worker.scalars().first()
         if db_worker:
             raise HTTPException(404, 'worker already exists')
-        else:
-            
-            
-            new_worker = Worker(
+        new_worker = Worker(
                 specialization=worker.specialization, 
                 user_id=worker.user_id, 
                 location_id=worker.location_id,
                 description=worker.description, 
             )
-
-
-            self.session.add(new_worker)
-            await self.session.commit()
-            user = await UserCRUD(session=self.session).get_user(id=worker.user_id)
-            return WorkerSchema(
-                id=new_worker.id,
-                specialization=new_worker.specialization,
-                location_id=new_worker.location_id,
-                user_id=user.id,
-                description=new_worker.description)
+        self.session.add(new_worker)
+        await self.session.commit()
+        return WorkerSchema(id=new_worker.id,specialization=new_worker.specialization,location_id=new_worker.location_id,user_id=new_worker.user_id,description=new_worker.description)
 
     
     async def get_workers(self, page: int) -> list[WorkerSchema]:
         params = Params(page=page, size=10)
         workers = await paginate(self.session, select(Worker), params=params)
         return [WorkerSchema(id=worker.id, user_id=worker.user_id, specialization=worker.specialization, description=worker.description,location_id=worker.location_id,) for worker in workers.items]
+
+    async def get_workers_by_specialization(self,specialization: str)->list[WorkerSchema]:
+        print("specialization ", specialization)
+        workers =  await self.session.execute(select(Worker).filter(Worker.specialization == specialization))
+        return [WorkerSchema(id=worker[0].id, user_id=worker[0].user_id, specialization=worker[0].specialization, description=worker[0].description,location_id=worker[0].location_id) for worker in workers]
+
 
 
     async def delete_worker(self, worker_id):
@@ -75,10 +70,12 @@ class WorkerCRUD:
         await self.session.commit()
         return WorkerSchema(id=self.worker.id, user_id=self.worker.user_id, specialization=self.worker.specialization, description=worker.description)
 
-    async def get_workers_for_one_location(self, location_id) -> list[WorkerSchema]:
+    async def get_workers_for_one_location(self, location_id: int) -> list[WorkerSchema]:
         workers =  await self.session.execute(select(Worker).filter(Worker.location_id == location_id))
+        print("location_id ", location_id)
         return [WorkerSchema(id=worker[0].id, user_id=worker[0].user_id, specialization=worker[0].specialization, description=worker[0].description,location_id=worker[0].location_id) for worker in workers]
   
+    
 
     async def check_worker_location(self,worker) -> bool:
         db_worker = await self.session.execute(select(Worker).filter(and_(Worker.specialization == worker.specialization, Worker.location_id == worker.location_id)))
