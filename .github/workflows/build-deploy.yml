@@ -78,6 +78,6 @@ jobs:
         - name: Docker run
           run: |
             docker stop ${{ env.NAME }} && docker rm ${{ env.NAME }} && docker rmi ${{ env.DOCKER_IMAGE }}:latest
-            docker run -d -t -i -e DATABASE_URL=${{ env.DATABASE_URL }}  -e SECRET=${{ env.SECRET }} \
+            docker run -d -t -i -e POSTGRES_USER=${{ env.POSTGRES_USER }}  -e SECRET=${{ env.SECRET }} -e POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }} -e POSTGRES_URL=${{ env.POSTGRES_URL }} -e POSTGRES_PORT=${{ env.POSTGRES_PORT }}  -e POSTGRES_DB=${{ env.POSTGRES_DB }}  \
             -p 80:8000 \
             --name intern  ${{ env.DOCKER_IMAGE }}:latest
