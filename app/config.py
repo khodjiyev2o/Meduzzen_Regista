@@ -1,5 +1,3 @@
-
-
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
 from app.routers import users, locations, workers, procedures, schedules, appointments, for_users
