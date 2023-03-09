@@ -12,7 +12,7 @@ from fastapi_pagination import Params
 from app.db import get_session
 from typing import Optional
 from app.services.auth import AuthHandler
-
+from app.services.workers import get_worker
 
 auth_cls = AuthHandler()
 
@@ -31,6 +31,7 @@ class ProcedureCrud:
         if db_procedure:
             raise HTTPException(404, 'This procedure  already exists')
         else:
+            worker = get_worker(id=procedure.worker_id)
             new_procedure = Procedure(worker_id=procedure.worker_id,name=procedure.name, duration=procedure.duration,description=procedure.description)
             self.session.add(new_procedure)
             await self.session.commit()
